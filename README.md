@@ -1,0 +1,33 @@
+# 1. About
+
+This library provides a thymeleaf3 dialect that resolves <esi:include> tags.
+
+When spring profiles "local" or "prod" are active, esi-includes will be resolved and their responses put into the output stream of the webpage.
+
+# 2. Usage
+
+* Add a dependency to this library to your project:
+  `compile de.otto:esiinclude-thymeleaf-dialect:0.0.1`
+
+* Provide a Fetch function that is used to resolve esi includes.
+  If a dependency to `com.ning:async-http-client` is present, such a function is provided automatically.
+ 
+  Otherwise you need to provide a spring bean with type Fetch yourself. The function takes the source url as its argument and returns a `Response` object.
+ 
+  Make sure that your Fetch-function handles redirects, as this library does not do it.
+  
+* Optional: Set property `esiinclude-thymeleaf-dialect.prefixForRelativePath` to `[http|https]://<hostname>` to prefix relative esi:include src urls.    
+
+
+# 3. Release Notes
+
+## Version 0.0.3
+* Add javadoc
+* Rename variables and httpClient to Fetch
+* Rename property `esiinclude-thymeleaf-dialect.hostname` to `esiinclude-thymeleaf-dialect.prefixForRelativePath`
+
+## Version 0.0.2
+Provide asyncHttpClient as httpClient when com.ning:async-http-client dependency is provided
+
+## Version 0.0.1
+Initial version
