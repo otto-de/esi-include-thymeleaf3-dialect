@@ -3,10 +3,10 @@ package de.otto.esidialect;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
 import de.otto.esidialect.thymeleaf3.EsiDialect;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -32,6 +32,7 @@ import java.util.concurrent.ExecutionException;
  * </p>
  */
 @Configuration
+@EnableConfigurationProperties(EsiDialectProperties.class)
 @Profile({"local", "prod"})
 public class EsiDialectConfiguration {
 
@@ -63,8 +64,8 @@ public class EsiDialectConfiguration {
     @Bean
     @ConditionalOnClass(AbstractElementTagProcessor.class)
     @ConditionalOnMissingBean(EsiDialect.class)
-    public EsiDialect conditionalEsiDialect(Fetch fetch, @Value("${esiinclude-thymeleaf-dialect.prefixForRelativePath:}") String prefixForRelativePath) {
-        return new EsiDialect(fetch, prefixForRelativePath);
+    public EsiDialect conditionalEsiDialect(Fetch fetch, EsiDialectProperties properties) {
+        return new EsiDialect(fetch, properties.getPrefixForRelativePath());
     }
 
 }

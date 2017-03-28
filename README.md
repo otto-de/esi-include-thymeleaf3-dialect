@@ -21,6 +21,13 @@ When spring profiles "local" or "prod" are active, esi-includes will be resolved
 
 # 3. Release Notes
 
+## Version 0.0.4
+* Add spring properties bean for property `esiinclude-thymeleaf-dialect.prefixForRelativePath` 
+so that you get syntax highlighting and code completion in your application*.yml files in your IDE.
+  
+  This property may now also be written "`prefix-for-relative-path`"
+ 
+
 ## Version 0.0.3
 * Add javadoc
 * Rename variables and httpClient to Fetch
