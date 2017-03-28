@@ -6,7 +6,7 @@ apply plugin: 'signing'
 apply plugin: 'com.github.ben-manes.versions'
 
 group = 'de.otto'
-version = '0.0.4'
+version = '0.0.5-SNAPSHOT'
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 archivesBaseName = 'esi-include-thymeleaf3-dialect'
