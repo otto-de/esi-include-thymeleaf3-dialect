@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/otto-de/esi-include-thymeleaf3-dialect.svg?branch=master)](https://travis-ci.org/otto-de/esi-include-thymeleaf3-dialect)
+
 # 1. About
 
 This library provides a thymeleaf3 dialect that resolves <esi:include> tags.
