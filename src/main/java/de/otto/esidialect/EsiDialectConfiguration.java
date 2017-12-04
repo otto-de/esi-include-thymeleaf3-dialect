@@ -1,8 +1,10 @@
 package de.otto.esidialect;
 
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.AsyncHttpClientConfig;
 import de.otto.esidialect.thymeleaf3.EsiDialect;
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.AsyncHttpClientConfig;
+import org.asynchttpclient.DefaultAsyncHttpClient;
+import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -42,20 +44,20 @@ public class EsiDialectConfiguration {
     public Fetch fetch() {
         final Integer timeout = 2 * 1000;
         final int maxRedirects = 20;
-        final AsyncHttpClientConfig cfg = new AsyncHttpClientConfig.Builder()
+        final AsyncHttpClientConfig cfg = new DefaultAsyncHttpClientConfig.Builder()
                 .setConnectTimeout(timeout)
                 .setRequestTimeout(timeout)
                 .setFollowRedirect(true)
                 .setMaxRedirects(maxRedirects)
                 .build();
 
-        final AsyncHttpClient httpClient = new AsyncHttpClient(cfg);
+        final AsyncHttpClient httpClient = new DefaultAsyncHttpClient(cfg);
 
         return src -> {
             try {
-                com.ning.http.client.Response response = httpClient.prepareGet(src).execute().get();
+                org.asynchttpclient.Response response = httpClient.prepareGet(src).execute().get();
                 return new Response(response.getStatusCode(), response.getStatusText(), response.getResponseBody());
-            } catch (InterruptedException | ExecutionException | IOException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
         };
