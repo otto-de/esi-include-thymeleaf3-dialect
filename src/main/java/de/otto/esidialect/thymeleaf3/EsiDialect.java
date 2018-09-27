@@ -1,12 +1,11 @@
 package de.otto.esidialect.thymeleaf3;
 
-import de.otto.esidialect.Fetch;
+import de.otto.esidialect.EsiContentResolver;
 import org.thymeleaf.dialect.AbstractProcessorDialect;
 import org.thymeleaf.processor.IProcessor;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
 
 /**
  * <p>A thymeleaf 3 dialect that processes {@code <esi:include>} tags.</p>
@@ -20,24 +19,20 @@ import java.util.function.Function;
  */
 public class EsiDialect extends AbstractProcessorDialect {
 
-    private final Fetch fetch;
-    private String prefixForRelativePath;
+    private EsiContentResolver esiContentResolver;
 
     /**
      * Creates the thymeleaf dialect for esi includes.
-     * @param fetch a {@link Function} that takes the url to be fetched and returns a response object with its content and status
-     * @param prefixForRelativePath optional, may be null. Protocol and hostname to prefix a relative url in the {@code src}-attribute. E.g. {@code "http://www.otto.de"}
      */
-    public EsiDialect(Fetch fetch, String prefixForRelativePath) {
+    public EsiDialect(EsiContentResolver esiContentResolver) {
         super("esiIncludeDialect", "esi", 10000);
-        this.fetch = fetch;
-        this.prefixForRelativePath = prefixForRelativePath;
+        this.esiContentResolver = esiContentResolver;
     }
 
     @Override
     public Set<IProcessor> getProcessors(String dialectPrefix) {
         final Set<IProcessor> processors = new HashSet<>();
-        processors.add(new EsiIncludeElementProcessor(fetch, prefixForRelativePath));
+        processors.add(new EsiIncludeElementProcessor(esiContentResolver));
         return processors;
     }
 }

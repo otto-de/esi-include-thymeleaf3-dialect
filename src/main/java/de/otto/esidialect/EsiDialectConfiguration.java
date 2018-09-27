@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.thymeleaf.processor.element.AbstractElementTagProcessor;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -66,8 +65,16 @@ public class EsiDialectConfiguration {
     @Bean
     @ConditionalOnClass(AbstractElementTagProcessor.class)
     @ConditionalOnMissingBean(EsiDialect.class)
-    public EsiDialect conditionalEsiDialect(Fetch fetch, EsiDialectProperties properties) {
-        return new EsiDialect(fetch, properties.getPrefixForRelativePath());
+    public EsiDialect conditionalEsiDialect(EsiContentResolver esiContentResolver) {
+        return new EsiDialect(esiContentResolver);
     }
+
+    @Bean
+    @ConditionalOnClass(AbstractElementTagProcessor.class)
+    @ConditionalOnMissingBean(EsiContentResolver.class)
+    public EsiContentResolver esiContentResolver(Fetch fetch, EsiDialectProperties properties) {
+        return new EsiContentResolver(fetch, properties.getPrefixForRelativePath());
+    }
+
 
 }

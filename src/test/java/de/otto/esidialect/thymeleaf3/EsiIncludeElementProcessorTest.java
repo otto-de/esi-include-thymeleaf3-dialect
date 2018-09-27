@@ -1,10 +1,9 @@
 package de.otto.esidialect.thymeleaf3;
 
+import de.otto.esidialect.EsiContentResolver;
 import de.otto.esidialect.Fetch;
 import de.otto.esidialect.Response;
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -17,55 +16,55 @@ public class EsiIncludeElementProcessorTest {
     private static final boolean NO_CONTINUE_ON_ERROR = false;
 
     @Test
-    public void shouldResolveEsiInclude() throws IOException {
+    public void shouldResolveEsiInclude() {
         Fetch fetch = s -> withResponse(200, "test");
 
         //when
-        final String html = processor(fetch).fetch("someSrc", "template", CONTINUE_ON_ERROR);
+        final String html = resolver(fetch).fetch("someSrc", "template", CONTINUE_ON_ERROR);
 
         //then
         assertThat(html, is("<!-- <esi:include src=\"someSrc\"> -->test<!-- </esi:include> -->"));
     }
 
     @Test
-    public void shouldHandleHttp404() throws IOException {
+    public void shouldHandleHttp404() {
         Fetch fetch = fetchWith404();
 
         //when
-        final String html = processor(fetch).fetch("someSrc", "template", CONTINUE_ON_ERROR);
+        final String html = resolver(fetch).fetch("someSrc", "template", CONTINUE_ON_ERROR);
 
         //then
         assertThat(html, is("<!-- <esi:include src=\"someSrc\"> --><!-- </esi:include> -->"));
     }
 
     @Test
-    public void shouldHttp404WithError() throws IOException {
+    public void shouldHttp404WithError() {
         Fetch fetch = fetchWith404();
 
         //when
-        final String html = processor(fetch).fetch("someSrc", "template", NO_CONTINUE_ON_ERROR);
+        final String html = resolver(fetch).fetch("someSrc", "template", NO_CONTINUE_ON_ERROR);
 
         //then
         assertThat(html, is("<!-- <esi:include src=\"someSrc\"> -->404: some status<!-- </esi:include> -->"));
     }
 
     @Test
-    public void shouldFailOnUnknownStatusCode() throws IOException {
+    public void shouldFailOnUnknownStatusCode() {
         Fetch fetch = s -> withResponse(333, "kaputt");
 
         //when
-        final String html = processor(fetch).fetch("redirect", "template", CONTINUE_ON_ERROR);
+        final String html = resolver(fetch).fetch("redirect", "template", CONTINUE_ON_ERROR);
 
         //then
         assertThat(html, is("<!-- <esi:include src=\"redirect\"> --><!-- </esi:include> -->"));
     }
 
     @Test
-    public void shouldFailOnUnknownStatusCodeWithError() throws IOException {
+    public void shouldFailOnUnknownStatusCodeWithError() {
         Fetch fetch = s -> withResponse(333, "kaputt");
 
         //when
-        final String html = processor(fetch).fetch("redirect", "template", NO_CONTINUE_ON_ERROR);
+        final String html = resolver(fetch).fetch("redirect", "template", NO_CONTINUE_ON_ERROR);
 
         //then
         assertThat(html, is("<!-- <esi:include src=\"redirect\"> -->333: some status<!-- </esi:include> -->"));
@@ -73,48 +72,48 @@ public class EsiIncludeElementProcessorTest {
 
 
     @Test
-    public void shouldHandleExceptionInFetchFunction() throws IOException {
+    public void shouldHandleExceptionInFetchFunction() {
         Fetch fetch = s -> {
             throw new IllegalStateException("error");
         };
 
         //when
-        final String html = processor(fetch).fetch("redirect", "template", CONTINUE_ON_ERROR);
+        final String html = resolver(fetch).fetch("redirect", "template", CONTINUE_ON_ERROR);
 
         //then
         assertThat(html, is("<!-- <esi:include src=\"redirect\"> --><!-- </esi:include> -->"));
     }
 
     @Test
-    public void shouldHandleExceptionInFetchFunctionWithError() throws IOException {
+    public void shouldHandleExceptionInFetchFunctionWithError() {
         Fetch fetch = s -> {
             throw new IllegalStateException("error");
         };
 
         //when
-        final String html = processor(fetch).fetch("redirect", "template", NO_CONTINUE_ON_ERROR);
+        final String html = resolver(fetch).fetch("redirect", "template", NO_CONTINUE_ON_ERROR);
 
         //then
         assertThat(html, is("<!-- <esi:include src=\"redirect\"> -->error<!-- </esi:include> -->"));
     }
 
     @Test
-    public void shouldReplaceRelativePathWithAbsolutePath() throws Exception {
+    public void shouldReplaceRelativePathWithAbsolutePath() {
         Fetch fetch = src -> withResponse(200, src);
 
         //when
-        final String html = processor(fetch).fetch("/relative", "template", NO_CONTINUE_ON_ERROR);
+        final String html = resolver(fetch).fetch("/relative", "template", NO_CONTINUE_ON_ERROR);
 
         //then
         assertThat(html, is("<!-- <esi:include src=\"/relative\"> -->https://www.otto.de/relative<!-- </esi:include> -->"));
     }
 
     @Test
-    public void shouldNotReplaceRelativePathWhenHostnameIsEmpty() throws Exception {
+    public void shouldNotReplaceRelativePathWhenHostnameIsEmpty() {
         Fetch fetch = src -> withResponse(200, src);
 
         //when
-        final String html = processor(fetch, null).fetch("/relative", "template", NO_CONTINUE_ON_ERROR);
+        final String html = resolver(fetch, null).fetch("/relative", "template", NO_CONTINUE_ON_ERROR);
 
         //then
         assertThat(html, is("<!-- <esi:include src=\"/relative\"> -->/relative<!-- </esi:include> -->"));
@@ -124,12 +123,12 @@ public class EsiIncludeElementProcessorTest {
         return s -> withResponse(404, "irgendwas");
     }
 
-    private EsiIncludeElementProcessor processor(Fetch fetch) {
-        return processor(fetch, "https://www.otto.de");
+    private EsiContentResolver resolver(Fetch fetch) {
+        return resolver(fetch, "https://www.otto.de");
     }
 
-    private EsiIncludeElementProcessor processor(Fetch fetch, String hostname) {
-        return new EsiIncludeElementProcessor(fetch, hostname);
+    private EsiContentResolver resolver(Fetch fetch, String hostname) {
+        return new EsiContentResolver(fetch, hostname);
     }
 
     private Response withResponse(int statusCode, String responseBody) {
