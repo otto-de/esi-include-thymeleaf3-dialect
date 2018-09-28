@@ -1,18 +1,22 @@
 package de.otto.esidialect;
 
+import org.springframework.util.MultiValueMap;
+
 /**
  * Response from the fetch-function.
  */
 public class Response {
 
     private int statusCode;
-    private String responseBody;
     private String statusText;
+    private byte[] responseBody;
+    private String contentType;
 
-    public Response(int statusCode, String statusText, String responseBody) {
+    public Response(int statusCode, String statusText, byte[] responseBody, String contentType) {
         this.statusCode = statusCode;
-        this.responseBody = responseBody;
         this.statusText = statusText;
+        this.responseBody = responseBody;
+        this.contentType = contentType;
     }
 
     public int getStatusCode() {
@@ -20,6 +24,10 @@ public class Response {
     }
 
     public String getResponseBody() {
+        return new String(responseBody);
+    }
+
+    public byte[] getResponseBodyAsBytes() {
         return responseBody;
     }
 
@@ -27,5 +35,7 @@ public class Response {
         return statusText;
     }
 
-
+    public String getContentType() {
+        return contentType;
+    }
 }
