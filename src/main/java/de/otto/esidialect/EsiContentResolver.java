@@ -7,6 +7,16 @@ import java.util.function.Function;
 
 import static java.lang.String.format;
 
+/**
+ * Content resolver for esi-includes fetching the content of an include's source url.
+ * <p>
+ * The content of the url of the {@code src}-attribute is fetched and inserted into the page flow,
+ * just as a esi-include processor like e.g.<strong>varnish</strong> would do.</p>
+ * <p>
+ * If the {@code onerror}-attribute is set to {@code continue}, any errors that occur while fetching the document are ignored.
+ * <br>Otherwise an error message is output into the pageflow.
+ * </p>
+ */
 public class EsiContentResolver {
 
     private static final Logger LOG = LoggerFactory.getLogger(EsiContentResolver.class);
@@ -14,7 +24,6 @@ public class EsiContentResolver {
     private final String prefixForRelativePath;
 
     /**
-     *
      * @param fetch a {@link Function} that takes the url to be fetched and returns a response object with its content and status
      * @param prefixForRelativePath optional, may be null. Protocol and hostname to prefix a relative url in the {@code src}-attribute. E.g. {@code "http://www.otto.de"}
      */
@@ -71,7 +80,6 @@ public class EsiContentResolver {
     private boolean prefixStartsWithProtocol(String prefixForRelativePath) {
         return prefixForRelativePath.startsWith("http://") || prefixForRelativePath.startsWith("https://");
     }
-
 
 
 }

@@ -23,8 +23,10 @@ When spring profiles "local" or "prod" are active, esi-includes will be resolved
 
 # 3. Release Notes
 
-## Version 0.0.6
-* Extract EsiContentResolver into separate Bean
+## Version 0.1.0
+* Extract EsiContentResolver into separate Bean.
+* Add proxy to avoid CORS errors when resources are loaded within an esi-included page. Proxy can be enabled using the property 
+`esiinclude-thymeleaf-dialect.proxy-enabled`. The port can be set with `esiinclude-thymeleaf-dialect.proxy-port`, default is `8085`.
 
 ## Version 0.0.4
 * Add spring properties bean for property `esiinclude-thymeleaf-dialect.prefixForRelativePath` 

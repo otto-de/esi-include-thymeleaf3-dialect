@@ -7,12 +7,13 @@ public class EsiDialectProperties {
 
     private String prefixForRelativePath;
 
-    private int proxyPort;
+    private int proxyPort = 8085;
 
     private boolean proxyEnabled;
 
     /**
      * Optional prefix for relative esi:include paths
+     *
      * @return prefix for relative esi:include paths or null if not set
      */
     public String getPrefixForRelativePath() {
@@ -23,6 +24,9 @@ public class EsiDialectProperties {
         this.prefixForRelativePath = prefixForRelativePath;
     }
 
+    /**
+     * @return HTTP proxy port, default: 8085
+     */
     public int getProxyPort() {
         return proxyPort;
     }
@@ -31,6 +35,9 @@ public class EsiDialectProperties {
         this.proxyPort = proxyPort;
     }
 
+    /**
+     * @return whether the HTTP proxy is enabled or not
+     */
     public boolean isProxyEnabled() {
         return proxyEnabled;
     }

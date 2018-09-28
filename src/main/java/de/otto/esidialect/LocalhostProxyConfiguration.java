@@ -16,6 +16,11 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+/**
+ * <p>Defines an HTTP proxy that is used to retrieve secondary includes if desired: Esi-included pages might
+ * include resources like CSS and JavaScript files causing CORS errors. Therefore, this proxy sets the HTTP
+ * header <code>Access-Control-Allow-Origin: *</code> on all responses.</p>
+ */
 @Configuration
 @EnableConfigurationProperties(EsiDialectProperties.class)
 @Profile({"prod", "local"})
