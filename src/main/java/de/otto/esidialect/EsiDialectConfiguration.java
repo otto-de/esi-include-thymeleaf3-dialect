@@ -5,6 +5,7 @@ import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.AsyncHttpClientConfig;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.thymeleaf.processor.element.AbstractElementTagProcessor;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -38,9 +40,7 @@ import java.util.concurrent.ExecutionException;
 public class EsiDialectConfiguration {
 
     @Bean
-    @ConditionalOnBean(AsyncHttpClient.class)
-    @ConditionalOnMissingBean(Fetch.class)
-    public Fetch fetch() {
+    public Fetch fetch(String userAgent, EsiDialectProperties properties) {
         final Integer timeout = 2 * 1000;
         final int maxRedirects = 20;
         final AsyncHttpClientConfig cfg = new DefaultAsyncHttpClientConfig.Builder()
@@ -48,18 +48,39 @@ public class EsiDialectConfiguration {
                 .setRequestTimeout(timeout)
                 .setFollowRedirect(true)
                 .setMaxRedirects(maxRedirects)
+                .setUserAgent(userAgent)
                 .build();
 
-        final AsyncHttpClient httpClient = new DefaultAsyncHttpClient(cfg);
+        final String urlPrefix;
+        if (properties.isProxyEnabled()) {
+            urlPrefix = "http://localhost:" + properties.getProxyPort();
+        } else {
+            urlPrefix = properties.getPrefixForRelativePath();
+        }
 
         return src -> {
-            try {
+            try (AsyncHttpClient httpClient = new DefaultAsyncHttpClient(cfg)) {
                 org.asynchttpclient.Response response = httpClient.prepareGet(src).execute().get();
-                return new Response(response.getStatusCode(), response.getStatusText(), response.getResponseBody());
-            } catch (InterruptedException | ExecutionException e) {
+
+                byte[] responseBodyAsBytes = response.getResponseBodyAsBytes();
+
+                if (requiresSanitizing(response.getContentType())) {
+                    String responseBody = response.getResponseBody();
+                    String sanitizedEsiIncludesBody = responseBody.replaceAll("href=\"/", "href=\"" + urlPrefix + "/");
+                    sanitizedEsiIncludesBody = sanitizedEsiIncludesBody.replaceAll("src=\"/", "src=\"" + urlPrefix + "/");
+                    responseBodyAsBytes = sanitizedEsiIncludesBody.getBytes();
+                }
+
+                return new Response(response.getStatusCode(), response.getStatusText(), responseBodyAsBytes, response.getContentType());
+            } catch (InterruptedException | ExecutionException | IOException e) {
                 throw new RuntimeException(e);
             }
         };
+
+    }
+
+    private boolean requiresSanitizing(String contentType) {
+        return contentType != null && contentType.contains("text/html");
     }
 
     @Bean

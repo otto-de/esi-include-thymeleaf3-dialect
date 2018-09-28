@@ -2,6 +2,9 @@ package de.otto.esidialect;
 
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -16,6 +19,8 @@ import java.net.URISyntaxException;
 @Configuration
 @EnableConfigurationProperties(EsiDialectProperties.class)
 @Profile({"prod", "local"})
+@ConditionalOnProperty(prefix = "esiinclude-thymeleaf-dialect",
+        value = "proxy-enabled", havingValue = "true")
 public class LocalhostProxyConfiguration {
 
     private EsiDialectProperties esiDialectProperties;
@@ -30,7 +35,7 @@ public class LocalhostProxyConfiguration {
     @PostConstruct
     public void startLocalhostDevelopProxy() throws IOException {
 
-        HttpServer server = HttpServer.create(new InetSocketAddress(8085), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(esiDialectProperties.getProxyPort()), 0);
         HttpContext context = server.createContext("/");
         context.setHandler(httpExchange -> {
 
