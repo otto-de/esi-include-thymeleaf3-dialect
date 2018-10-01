@@ -7,9 +7,9 @@ public class EsiDialectProperties {
 
     private String prefixForRelativePath;
 
-    private String proxyHost;
+    private String proxyRedirectProtocol = "https";
+    private String proxyRedirectHost;
     private int proxyPort = 8085;
-
     private boolean proxyEnabled;
 
     /**
@@ -25,12 +25,28 @@ public class EsiDialectProperties {
         this.prefixForRelativePath = prefixForRelativePath;
     }
 
-    public String getProxyHost() {
-        return proxyHost;
+    /**
+     * The protocol that is used for redirects. default: "https"
+     * @return the proxy redirect protocol
+     */
+    public String getProxyRedirectProtocol() {
+        return proxyRedirectProtocol;
     }
 
-    public void setProxyHost(String proxyHost) {
-        this.proxyHost = proxyHost;
+    public void setProxyRedirectProtocol(String proxyRedirectProtocol) {
+        this.proxyRedirectProtocol = proxyRedirectProtocol;
+    }
+
+    /**
+     * The host where the request is redirected to
+     * @return HTTP proxy redirect host
+     */
+    public String getProxyRedirectHost() {
+        return proxyRedirectHost;
+    }
+
+    public void setProxyRedirectHost(String proxyRedirectHost) {
+        this.proxyRedirectHost = proxyRedirectHost;
     }
 
     /**
@@ -54,4 +70,5 @@ public class EsiDialectProperties {
     public void setProxyEnabled(boolean proxyEnabled) {
         this.proxyEnabled = proxyEnabled;
     }
+
 }

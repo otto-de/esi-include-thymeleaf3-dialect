@@ -2,8 +2,6 @@ package de.otto.esidialect;
 
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -44,31 +42,30 @@ public class LocalhostProxyConfiguration {
         HttpContext context = server.createContext("/");
         context.setHandler(httpExchange -> {
 
-            try {
-                URI redirectUri = changeHostToProxyHost(httpExchange.getRequestURI());
+            URI redirectUri = changeHostToProxyHost(httpExchange.getRequestURI());
 
-                Response response = fetch.apply(redirectUri.toString());
+            Response response = fetch.apply(redirectUri.toString());
 
-                httpExchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-                httpExchange.getResponseHeaders().add("Content-Type", response.getContentType());
+            httpExchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            httpExchange.getResponseHeaders().add("Content-Type", response.getContentType());
 
-                httpExchange.sendResponseHeaders(response.getStatusCode(), response.getResponseBodyAsBytes().length);
+            httpExchange.sendResponseHeaders(response.getStatusCode(), response.getResponseBodyAsBytes().length);
 
-                OutputStream outputStream = httpExchange.getResponseBody();
-                outputStream.write(response.getResponseBodyAsBytes());
-                outputStream.flush();
-                httpExchange.close();
-
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
+            OutputStream outputStream = httpExchange.getResponseBody();
+            outputStream.write(response.getResponseBodyAsBytes());
+            outputStream.flush();
+            httpExchange.close();
 
         });
         server.start();
     }
 
-    private URI changeHostToProxyHost(URI uri) throws URISyntaxException {
-        return new URI("https", esiDialectProperties.getProxyHost(), uri.getPath(), uri.getQuery(), uri.getFragment());
+    private URI changeHostToProxyHost(URI uri) {
+        try {
+            return new URI(esiDialectProperties.getProxyRedirectProtocol(), esiDialectProperties.getProxyRedirectHost(), uri.getPath(), uri.getQuery(), uri.getFragment());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
