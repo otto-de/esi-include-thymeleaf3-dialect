@@ -23,6 +23,9 @@ When spring profiles "local" or "prod" are active, esi-includes will be resolved
 
 # 3. Release Notes
 
+## Version 0.1.1
+* Add properties `esiinclude-thymeleaf-dialect.proxy-redirect-host` and `esiinclude-thymeleaf-dialect.proxy-redirect-scheme` to make redirect host and scheme configurable.
+
 ## Version 0.1.0
 * Extract EsiContentResolver into separate Bean.
 * Add proxy to avoid CORS errors when resources are loaded within an esi-included page. Proxy can be enabled using the property 
