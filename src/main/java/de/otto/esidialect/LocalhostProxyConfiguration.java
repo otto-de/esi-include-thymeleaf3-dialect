@@ -45,7 +45,7 @@ public class LocalhostProxyConfiguration {
         context.setHandler(httpExchange -> {
 
             try {
-                URI redirectUri = changeHostToDevelopOttoDe(httpExchange.getRequestURI());
+                URI redirectUri = changeHostToProxyHost(httpExchange.getRequestURI());
 
                 Response response = fetch.apply(redirectUri.toString());
 
@@ -60,16 +60,15 @@ public class LocalhostProxyConfiguration {
                 httpExchange.close();
 
             } catch (URISyntaxException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
-
 
         });
         server.start();
     }
 
-    private URI changeHostToDevelopOttoDe(URI uri) throws URISyntaxException {
-        return new URI("https", "develop.otto.de", uri.getPath(), uri.getQuery(), uri.getFragment());
+    private URI changeHostToProxyHost(URI uri) throws URISyntaxException {
+        return new URI("https", esiDialectProperties.getProxyHost(), uri.getPath(), uri.getQuery(), uri.getFragment());
     }
 
 }

@@ -7,6 +7,7 @@ public class EsiDialectProperties {
 
     private String prefixForRelativePath;
 
+    private String proxyHost;
     private int proxyPort = 8085;
 
     private boolean proxyEnabled;
@@ -22,6 +23,14 @@ public class EsiDialectProperties {
 
     public void setPrefixForRelativePath(String prefixForRelativePath) {
         this.prefixForRelativePath = prefixForRelativePath;
+    }
+
+    public String getProxyHost() {
+        return proxyHost;
+    }
+
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
     }
 
     /**

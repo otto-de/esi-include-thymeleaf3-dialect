@@ -1,7 +1,5 @@
 package de.otto.esidialect;
 
-import org.springframework.util.MultiValueMap;
-
 /**
  * Response from the fetch-function. It uses byte[] instead of String so that binary content can be passed as well.
  */
