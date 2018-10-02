@@ -21,7 +21,6 @@ import java.net.URISyntaxException;
  */
 @Configuration
 @EnableConfigurationProperties(EsiDialectProperties.class)
-@Profile({"prod", "local"})
 @ConditionalOnProperty(prefix = "esiinclude-thymeleaf-dialect",
         value = "proxy-enabled", havingValue = "true")
 public class LocalhostProxyConfiguration {

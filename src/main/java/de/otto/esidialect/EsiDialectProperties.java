@@ -11,6 +11,7 @@ public class EsiDialectProperties {
     private String proxyRedirectHost;
     private int proxyPort = 8085;
     private boolean proxyEnabled;
+    private boolean dialectEnabled;
 
     /**
      * Optional prefix for relative esi:include paths
@@ -71,4 +72,11 @@ public class EsiDialectProperties {
         this.proxyEnabled = proxyEnabled;
     }
 
+    public boolean isDialectEnabled() {
+        return dialectEnabled;
+    }
+
+    public void setDialectEnabled(boolean dialectEnabled) {
+        this.dialectEnabled = dialectEnabled;
+    }
 }

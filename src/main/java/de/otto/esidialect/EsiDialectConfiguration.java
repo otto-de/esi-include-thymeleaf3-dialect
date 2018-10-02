@@ -5,14 +5,12 @@ import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.AsyncHttpClientConfig;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.thymeleaf.processor.element.AbstractElementTagProcessor;
 
 import java.io.IOException;
@@ -36,7 +34,8 @@ import java.util.concurrent.ExecutionException;
  */
 @Configuration
 @EnableConfigurationProperties(EsiDialectProperties.class)
-@Profile({"local", "prod"})
+@ConditionalOnProperty(prefix = "esiinclude-thymeleaf-dialect",
+        value = "dialect-enabled", havingValue = "true")
 public class EsiDialectConfiguration {
 
     @Bean
