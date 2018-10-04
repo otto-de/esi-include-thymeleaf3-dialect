@@ -1,6 +1,7 @@
 package de.otto.esidialect;
 
 import com.jayway.awaitility.Awaitility;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,6 +32,11 @@ public class LocalhostProxyTest {
         localhostProxy = new LocalhostProxy(esiDialectProperties, fetch);
     }
 
+    @After
+    public void tearDown() {
+        localhostProxy.stopProxy();
+    }
+
     @Test
     public void shouldProxyToRedirectUrl() throws IOException {
         //given
@@ -49,6 +55,16 @@ public class LocalhostProxyTest {
 
         //then
         assertProxyIsStopped(url);
+    }
+
+
+    @Test
+    public void shouldIgnoreWhenPortIsAlreadyInUse() throws IOException {
+        //given
+        localhostProxy.startProxy();
+
+        //when
+        localhostProxy.startProxy(); //should not fail
     }
 
     private void assertProxyIsStopped(URL url) {
