@@ -18,9 +18,9 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class LocalhostProxyConfigurationTest {
+public class LocalhostProxyTest {
 
-    private LocalhostProxyConfiguration localhostProxyConfiguration;
+    private LocalhostProxy localhostProxy;
 
     @Before
     public void setUp() {
@@ -28,13 +28,13 @@ public class LocalhostProxyConfigurationTest {
 
         Fetch fetch = mock(Fetch.class);
         when(fetch.apply("http://somehost/test")).thenReturn(new Response(200, "OK", "test response".getBytes(), "text/html"));
-        localhostProxyConfiguration = new LocalhostProxyConfiguration(esiDialectProperties, fetch);
+        localhostProxy = new LocalhostProxy(esiDialectProperties, fetch);
     }
 
     @Test
     public void shouldProxyToRedirectUrl() throws IOException {
         //given
-        localhostProxyConfiguration.startProxy();
+        localhostProxy.startProxy();
 
         //when
         URL url = new URL("http://localhost:8888/test");
@@ -45,7 +45,7 @@ public class LocalhostProxyConfigurationTest {
         assertThat(result, is("test response"));
 
         //when
-        localhostProxyConfiguration.stopProxy();
+        localhostProxy.stopProxy();
 
         //then
         assertProxyIsStopped(url);

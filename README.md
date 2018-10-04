@@ -23,6 +23,9 @@ When property `esiinclude-thymeleaf-dialect.dialect-enabled` is `true`, esi-incl
 
 # 3. Release Notes
 
+## Version 0.2.2
+* Catch BindException when proxy port is already in use. This may happen during spring integration tests when spring caches multiple application contexts.
+
 ## Version 0.2.1
 * Stop proxy on context shutdown in @PreDestroy
 
