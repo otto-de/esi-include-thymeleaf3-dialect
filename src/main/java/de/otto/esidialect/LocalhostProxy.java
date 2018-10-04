@@ -66,7 +66,7 @@ public class LocalhostProxy {
     @PreDestroy
     public void stopProxy() {
         if (server != null) {
-            LOGGER.warn("!!!! Stopping Proxy !!!!");
+            LOGGER.info("stopping proxy");
             server.stop(0);
         }
     }
