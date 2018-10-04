@@ -4,7 +4,7 @@
 
 This library provides a thymeleaf3 dialect that resolves <esi:include> tags.
 
-When spring profiles "local" or "prod" are active, esi-includes will be resolved and their responses put into the output stream of the webpage.
+When property `esiinclude-thymeleaf-dialect.dialect-enabled` is `true`, esi-includes will be resolved and their responses put into the output stream of the webpage.
 
 # 2. Usage
 
@@ -22,6 +22,9 @@ When spring profiles "local" or "prod" are active, esi-includes will be resolved
 
 
 # 3. Release Notes
+
+## Version 0.2.0
+* Activate esi dialect by property `esiinclude-thymeleaf-dialect.dialect-enabled` instead of by spring profiles 
 
 ## Version 0.1.1
 * Add properties `esiinclude-thymeleaf-dialect.proxy-redirect-host` and `esiinclude-thymeleaf-dialect.proxy-redirect-scheme` to make redirect host and scheme configurable.
