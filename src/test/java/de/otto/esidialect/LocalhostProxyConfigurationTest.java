@@ -1,5 +1,7 @@
 package de.otto.esidialect;
 
+import com.jayway.awaitility.Awaitility;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -18,18 +20,21 @@ import static org.mockito.Mockito.when;
 
 public class LocalhostProxyConfigurationTest {
 
-    @Test
-    public void shouldProxyToRedirectUrl() throws IOException {
-        //given
-        EsiDialectProperties esiDialectProperties = new EsiDialectProperties();
-        esiDialectProperties.setProxyRedirectProtocol("http");
-        esiDialectProperties.setProxyRedirectHost("somehost");
-        esiDialectProperties.setProxyPort(8888);
+    private LocalhostProxyConfiguration localhostProxyConfiguration;
+
+    @Before
+    public void setUp() {
+        EsiDialectProperties esiDialectProperties = configureProxy();
 
         Fetch fetch = mock(Fetch.class);
         when(fetch.apply("http://somehost/test")).thenReturn(new Response(200, "OK", "test response".getBytes(), "text/html"));
+        localhostProxyConfiguration = new LocalhostProxyConfiguration(esiDialectProperties, fetch);
+    }
 
-        new LocalhostProxyConfiguration(esiDialectProperties, fetch).startLocalhostDevelopProxy();
+    @Test
+    public void shouldProxyToRedirectUrl() throws IOException {
+        //given
+        localhostProxyConfiguration.startProxy();
 
         //when
         URL url = new URL("http://localhost:8888/test");
@@ -38,6 +43,32 @@ public class LocalhostProxyConfigurationTest {
         //then
         String result = toString(connection.getInputStream());
         assertThat(result, is("test response"));
+
+        //when
+        localhostProxyConfiguration.stopProxy();
+
+        //then
+        assertProxyIsStopped(url);
+    }
+
+    private void assertProxyIsStopped(URL url) {
+        Awaitility.await().until(() -> {
+            try {
+                url.openConnection().connect();
+                return false;
+            } catch (IOException e) {
+                return true;
+            }
+        });
+    }
+
+
+    private EsiDialectProperties configureProxy() {
+        EsiDialectProperties esiDialectProperties = new EsiDialectProperties();
+        esiDialectProperties.setProxyRedirectProtocol("http");
+        esiDialectProperties.setProxyRedirectHost("somehost");
+        esiDialectProperties.setProxyPort(8888);
+        return esiDialectProperties;
     }
 
 

@@ -23,6 +23,9 @@ When property `esiinclude-thymeleaf-dialect.dialect-enabled` is `true`, esi-incl
 
 # 3. Release Notes
 
+## Version 0.2.1
+* Stop proxy on context shutdown in @PreDestroy
+
 ## Version 0.2.0
 * Activate esi dialect by property `esiinclude-thymeleaf-dialect.dialect-enabled` instead of by spring profiles 
 

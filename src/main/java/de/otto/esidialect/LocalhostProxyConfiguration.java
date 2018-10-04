@@ -5,9 +5,9 @@ import com.sun.net.httpserver.HttpServer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -28,6 +28,7 @@ public class LocalhostProxyConfiguration {
     private EsiDialectProperties esiDialectProperties;
 
     private Fetch fetch;
+    private HttpServer server;
 
     public LocalhostProxyConfiguration(EsiDialectProperties esiDialectProperties, Fetch fetch) {
         this.esiDialectProperties = esiDialectProperties;
@@ -35,9 +36,8 @@ public class LocalhostProxyConfiguration {
     }
 
     @PostConstruct
-    public void startLocalhostDevelopProxy() throws IOException {
-
-        HttpServer server = HttpServer.create(new InetSocketAddress(esiDialectProperties.getProxyPort()), 0);
+    public void startProxy() throws IOException {
+        server = HttpServer.create(new InetSocketAddress(esiDialectProperties.getProxyPort()), 0);
         HttpContext context = server.createContext("/");
         context.setHandler(httpExchange -> {
 
@@ -57,6 +57,13 @@ public class LocalhostProxyConfiguration {
 
         });
         server.start();
+    }
+
+    @PreDestroy
+    public void stopProxy() {
+        if (server != null) {
+            server.stop(0);
+        }
     }
 
     private URI changeHostToProxyHost(URI uri) {
