@@ -23,6 +23,9 @@ When property `esiinclude-thymeleaf-dialect.dialect-enabled` is `true`, esi-incl
 
 # 3. Release Notes
 
+## Version 0.2.4
+* Provide default fetch implementation even when `dialect-enabled` is false since it is used by both the proxy and the esi dialect.
+
 ## Version 0.2.3
 * Fix logging
 
