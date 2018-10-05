@@ -5,7 +5,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'com.github.ben-manes.versions'
 
-version = '0.2.5-SNAPSHOT'
+version = '0.2.5'
 group = 'de.otto'
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
@@ -31,7 +31,6 @@ ext.libraries = [
 dependencies {
     ext.springBootVersion = '1.4.2.RELEASE'
     compileOnly libraries.thymeleaf3
-    compileOnly group: 'org.asynchttpclient', name: 'async-http-client', version: '2.0.37'
 
     compile group: 'org.springframework', name: 'spring-context', version: '4.3.4.RELEASE'
     compile group: 'org.springframework', name: 'spring-beans', version: '4.3.4.RELEASE'
