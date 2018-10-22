@@ -9,7 +9,7 @@ When property `esiinclude-thymeleaf-dialect.dialect-enabled` is `true`, esi-incl
 # 2. Usage
 
 * Add a dependency to this library to your project:
-  `compile de.otto:esiinclude-thymeleaf-dialect:0.0.1`
+  `compile de.otto:esiinclude-thymeleaf-dialect:<version>`
 
 * Provide a Fetch function that is used to resolve esi includes.
   If a dependency to `com.ning:async-http-client` is present, such a function is provided automatically.
@@ -18,7 +18,18 @@ When property `esiinclude-thymeleaf-dialect.dialect-enabled` is `true`, esi-incl
  
   Make sure that your Fetch-function handles redirects, as this library does not do it.
   
+* Set property `esiinclude-thymeleaf-dialect.dialectEnabled`  to `true` so that the esi dialect is actually used
+  
 * Optional: Set property `esiinclude-thymeleaf-dialect.prefixForRelativePath` to `[http|https]://<hostname>` to prefix relative esi:include src urls.    
+
+* Optional: Set property `esiinclude-thymeleaf-dialect.proxyEnabled` to `true` to enable and start a local proxy. This proxy sets the header `Access-Control-Allow-Origin` to `*` so that problems with CORS are prevented.
+ 
+  The following properties configure the proxy:
+  - `proxyRedirectProtocol` - protocol used for redirects, default is `https`
+  - `proxyRedirectHost`- host where to redirect to
+  - `proxyPort` - port where the proxy is listening, default is `8085`
+
+
 
 
 # 3. Release Notes
