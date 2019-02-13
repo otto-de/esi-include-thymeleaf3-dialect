@@ -34,6 +34,9 @@ When property `esiinclude-thymeleaf-dialect.dialect-enabled` is `true`, esi-incl
 
 # 3. Release Notes
 
+## Version 1.0.0
+* Updates to Spring 5.x, Spring Boot 2.x
+
 ## Version 0.2.5
 * Remove default fetch configuration
 
