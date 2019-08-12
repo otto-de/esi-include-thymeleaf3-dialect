@@ -34,6 +34,11 @@ When property `esiinclude-thymeleaf-dialect.dialect-enabled` is `true`, esi-incl
 
 # 3. Release Notes
 
+## Version 1.1.0
+* Add property `enabled-uris`. 
+ It's now possible to restrict resolving of esi includes. When set only esi includes that are contained in responses of request uris that start with one of the configured `enabled-uris` are resolved. 
+When not set, all esi includes are resolved as before.
+
 ## Version 1.0.0
 * Updates to Spring 5.x, Spring Boot 2.x
 

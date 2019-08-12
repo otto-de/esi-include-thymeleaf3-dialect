@@ -1,143 +1,74 @@
 package de.otto.esidialect.thymeleaf3;
 
 import de.otto.esidialect.EsiContentResolver;
-import de.otto.esidialect.Fetch;
-import de.otto.esidialect.Response;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.thymeleaf.context.WebEngineContext;
+import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.element.IElementTagStructureHandler;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.util.Collections;
+
+import static org.mockito.Mockito.*;
 
 public class EsiIncludeElementProcessorTest {
 
-    private static final boolean CONTINUE_ON_ERROR = true;
-    private static final boolean NO_CONTINUE_ON_ERROR = false;
+    private final EsiContentResolver esiContentResolver = mock(EsiContentResolver.class);
 
     @Test
-    public void shouldResolveEsiInclude() {
-        Fetch fetch = s -> withResponse(200, "test");
+    public void shouldNotReplaceUrlThatIsNotEnabled() {
+        //given
+        EsiIncludeElementProcessor esiIncludeElementProcessor = new EsiIncludeElementProcessor(esiContentResolver, Collections.singletonList("/some/enabled/url"));
+        WebEngineContext templateContext = withContextRequest("/some/not/enabled/url/with/more/path/params");
 
         //when
-        final String html = resolver(fetch).fetch("someSrc", "template", CONTINUE_ON_ERROR);
+        esiIncludeElementProcessor.doProcess(templateContext, withTag("someSrc", false), mock(IElementTagStructureHandler.class));
 
         //then
-        assertThat(html, is("<!-- <esi:include src=\"someSrc\"> -->test<!-- </esi:include> -->"));
-    }
-
-    @Test
-    public void shouldHandleHttp404() {
-        Fetch fetch = fetchWith404();
-
-        //when
-        final String html = resolver(fetch).fetch("someSrc", "template", CONTINUE_ON_ERROR);
-
-        //then
-        assertThat(html, is("<!-- <esi:include src=\"someSrc\"> --><!-- </esi:include> -->"));
+        verifyZeroInteractions(esiContentResolver);
     }
 
     @Test
-    public void shouldHttp404WithError() {
-        Fetch fetch = fetchWith404();
+    public void shouldReplaceUrlThatIsEnabled() {
+        //given
+        EsiIncludeElementProcessor esiIncludeElementProcessor = new EsiIncludeElementProcessor(esiContentResolver, Collections.singletonList("/some/enabled/url"));
+        WebEngineContext templateContext = withContextRequest("/some/enabled/url/with/more/path/params");
+        IProcessableElementTag tag = withTag("someSrc", false);
 
         //when
-        final String html = resolver(fetch).fetch("someSrc", "template", NO_CONTINUE_ON_ERROR);
+        esiIncludeElementProcessor.doProcess(templateContext, tag, mock(IElementTagStructureHandler.class));
 
         //then
-        assertThat(html, is("<!-- <esi:include src=\"someSrc\"> -->404: some status<!-- </esi:include> -->"));
+        verify(esiContentResolver).fetch("someSrc", null, false);
     }
 
     @Test
-    public void shouldFailOnUnknownStatusCode() {
-        Fetch fetch = s -> withResponse(333, "kaputt");
+    public void shouldReplaceUrlWhenEnabledUriListIsEmpty() {
+        //given
+        EsiIncludeElementProcessor esiIncludeElementProcessor = new EsiIncludeElementProcessor(esiContentResolver, Collections.emptyList());
+        WebEngineContext templateContext = withContextRequest("/some/enabled/url/with/more/path/params");
+        IProcessableElementTag tag = withTag("someSrc", false);
 
         //when
-        final String html = resolver(fetch).fetch("redirect", "template", CONTINUE_ON_ERROR);
+        esiIncludeElementProcessor.doProcess(templateContext, tag, mock(IElementTagStructureHandler.class));
 
         //then
-        assertThat(html, is("<!-- <esi:include src=\"redirect\"> --><!-- </esi:include> -->"));
+        verify(esiContentResolver).fetch("someSrc", null, false);
     }
 
-    @Test
-    public void shouldFailOnUnknownStatusCodeWithError() {
-        Fetch fetch = s -> withResponse(333, "kaputt");
-
-        //when
-        final String html = resolver(fetch).fetch("redirect", "template", NO_CONTINUE_ON_ERROR);
-
-        //then
-        assertThat(html, is("<!-- <esi:include src=\"redirect\"> -->333: some status<!-- </esi:include> -->"));
+    private WebEngineContext withContextRequest(String s) {
+        WebEngineContext templateContext = mock(WebEngineContext.class);
+        MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
+        mockHttpServletRequest.setRequestURI(s);
+        when(templateContext.getRequest()).thenReturn(mockHttpServletRequest);
+        return templateContext;
     }
 
-
-    @Test
-    public void shouldHandleExceptionInFetchFunction() {
-        Fetch fetch = s -> {
-            throw new IllegalStateException("error");
-        };
-
-        //when
-        final String html = resolver(fetch).fetch("redirect", "template", CONTINUE_ON_ERROR);
-
-        //then
-        assertThat(html, is("<!-- <esi:include src=\"redirect\"> --><!-- </esi:include> -->"));
+    private IProcessableElementTag withTag(String src, boolean onerror) {
+        IProcessableElementTag tag = mock(IProcessableElementTag.class);
+        when(tag.getAttributeValue("src")).thenReturn(src);
+        when(tag.getAttributeValue("onerror")).thenReturn(String.valueOf(onerror));
+        return tag;
     }
-
-    @Test
-    public void shouldHandleExceptionInFetchFunctionWithError() {
-        Fetch fetch = s -> {
-            throw new IllegalStateException("error");
-        };
-
-        //when
-        final String html = resolver(fetch).fetch("redirect", "template", NO_CONTINUE_ON_ERROR);
-
-        //then
-        assertThat(html, is("<!-- <esi:include src=\"redirect\"> -->error<!-- </esi:include> -->"));
-    }
-
-    @Test
-    public void shouldReplaceRelativePathWithAbsolutePath() {
-        Fetch fetch = src -> withResponse(200, src);
-
-        //when
-        final String html = resolver(fetch).fetch("/relative", "template", NO_CONTINUE_ON_ERROR);
-
-        //then
-        assertThat(html, is("<!-- <esi:include src=\"/relative\"> -->https://www.otto.de/relative<!-- </esi:include> -->"));
-    }
-
-    @Test
-    public void shouldNotReplaceRelativePathWhenHostnameIsEmpty() {
-        Fetch fetch = src -> withResponse(200, src);
-
-        //when
-        final String html = resolver(fetch, null).fetch("/relative", "template", NO_CONTINUE_ON_ERROR);
-
-        //then
-        assertThat(html, is("<!-- <esi:include src=\"/relative\"> -->/relative<!-- </esi:include> -->"));
-    }
-
-    private Fetch fetchWith404() {
-        return s -> withResponse(404, "irgendwas");
-    }
-
-    private EsiContentResolver resolver(Fetch fetch) {
-        return resolver(fetch, "https://www.otto.de");
-    }
-
-    private EsiContentResolver resolver(Fetch fetch, String hostname) {
-        return new EsiContentResolver(fetch, hostname);
-    }
-
-    private Response withResponse(int statusCode, String responseBody) {
-        Response response = mock(Response.class);
-        when(response.getResponseBody()).thenReturn(responseBody);
-        when(response.getStatusCode()).thenReturn(statusCode);
-        when(response.getStatusText()).thenReturn("some status");
-        return response;
-    }
-
 
 }

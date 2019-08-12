@@ -34,8 +34,8 @@ public class EsiDialectConfiguration {
     @Bean
     @ConditionalOnClass(AbstractElementTagProcessor.class)
     @ConditionalOnMissingBean(EsiDialect.class)
-    public EsiDialect conditionalEsiDialect(EsiContentResolver esiContentResolver) {
-        return new EsiDialect(esiContentResolver);
+    public EsiDialect conditionalEsiDialect(EsiContentResolver esiContentResolver, EsiDialectProperties properties) {
+        return new EsiDialect(esiContentResolver, properties.getEnabledUris());
     }
 
     @Bean

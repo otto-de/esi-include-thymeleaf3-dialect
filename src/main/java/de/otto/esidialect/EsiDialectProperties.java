@@ -2,6 +2,8 @@ package de.otto.esidialect;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.List;
+
 @ConfigurationProperties(prefix = "esiinclude-thymeleaf-dialect")
 public class EsiDialectProperties {
 
@@ -12,6 +14,7 @@ public class EsiDialectProperties {
     private int proxyPort = 8085;
     private boolean proxyEnabled;
     private boolean dialectEnabled;
+    private List<String> enabledUris;
 
     /**
      * Optional prefix for relative esi:include paths
@@ -78,5 +81,13 @@ public class EsiDialectProperties {
 
     public void setDialectEnabled(boolean dialectEnabled) {
         this.dialectEnabled = dialectEnabled;
+    }
+
+    public void setEnabledUris(List<String> enabledUris) {
+        this.enabledUris = enabledUris;
+    }
+
+    public List<String> getEnabledUris() {
+        return this.enabledUris;
     }
 }
