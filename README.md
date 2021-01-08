@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/otto-de/esi-include-thymeleaf3-dialect.svg?branch=master)](https://travis-ci.org/otto-de/esi-include-thymeleaf3-dialect)
+![Build](https://github.com/otto-de/esi-include-thymeleaf3-dialect/workflows/Build/badge.svg)
 
 # 1. About
 
