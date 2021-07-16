@@ -9,7 +9,7 @@ When property `esiinclude-thymeleaf-dialect.dialect-enabled` is `true`, esi-incl
 # 2. Usage
 
 * Add a dependency to this library to your project:
-  `compile de.otto:esiinclude-thymeleaf-dialect:<version>`
+  `implementation de.otto:esi-include-thymeleaf3-dialect:<version>`
 
 * Provide a Fetch function that is used to resolve esi includes.
   If a dependency to `com.ning:async-http-client` is present, such a function is provided automatically.
