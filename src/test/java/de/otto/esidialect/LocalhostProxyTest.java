@@ -1,9 +1,9 @@
 package de.otto.esidialect;
 
-import com.jayway.awaitility.Awaitility;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,8 +14,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,7 +23,7 @@ public class LocalhostProxyTest {
 
     private LocalhostProxy localhostProxy;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         EsiDialectProperties esiDialectProperties = configureProxy();
 
@@ -32,7 +32,7 @@ public class LocalhostProxyTest {
         localhostProxy = new LocalhostProxy(esiDialectProperties, fetch);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         localhostProxy.stopProxy();
     }

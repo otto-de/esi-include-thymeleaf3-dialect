@@ -1,11 +1,12 @@
 package de.otto.esidialect.thymeleaf3;
 
 import de.otto.esidialect.EsiContentResolver;
-import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
+import org.junit.jupiter.api.Test;
 import org.thymeleaf.context.WebEngineContext;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
+import org.thymeleaf.web.IWebExchange;
+import org.thymeleaf.web.IWebRequest;
 
 import java.util.Collections;
 
@@ -25,7 +26,7 @@ public class EsiIncludeElementProcessorTest {
         esiIncludeElementProcessor.doProcess(templateContext, withTag("someSrc", false), mock(IElementTagStructureHandler.class));
 
         //then
-        verifyZeroInteractions(esiContentResolver);
+        verifyNoInteractions(esiContentResolver);
     }
 
     @Test
@@ -56,11 +57,13 @@ public class EsiIncludeElementProcessorTest {
         verify(esiContentResolver).fetch("someSrc", null, false);
     }
 
-    private WebEngineContext withContextRequest(String s) {
+    private WebEngineContext withContextRequest(String requestUri) {
+        IWebRequest mockRequest = mock(IWebRequest.class);
+        when(mockRequest.getRequestURL()).thenReturn(requestUri);
+        IWebExchange mockExchange = mock(IWebExchange.class);
+        when(mockExchange.getRequest()).thenReturn(mockRequest);
         WebEngineContext templateContext = mock(WebEngineContext.class);
-        MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
-        mockHttpServletRequest.setRequestURI(s);
-        when(templateContext.getRequest()).thenReturn(mockHttpServletRequest);
+        when(templateContext.getExchange()).thenReturn(mockExchange);
         return templateContext;
     }
 

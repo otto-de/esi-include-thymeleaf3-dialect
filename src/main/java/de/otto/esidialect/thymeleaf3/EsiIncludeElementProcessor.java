@@ -26,7 +26,7 @@ public class EsiIncludeElementProcessor extends AbstractElementTagProcessor {
 
     @Override
     protected void doProcess(ITemplateContext context, IProcessableElementTag tag, IElementTagStructureHandler structureHandler) {
-        if (enabledUris == null || enabledUris.isEmpty() || enabledUris.stream().anyMatch(uri -> ((WebEngineContext) context).getRequest().getRequestURI().startsWith(uri))) {
+        if (enabledUris == null || enabledUris.isEmpty() || enabledUris.stream().anyMatch(uri -> ((WebEngineContext) context).getExchange().getRequest().getRequestURL().startsWith(uri))) {
             String src = tag.getAttributeValue("src");
             String body = esiContentResolver.fetch(src, tag.getTemplateName(), continueOnError(tag.getAttributeValue("onerror")));
             structureHandler.replaceWith(body, false);
