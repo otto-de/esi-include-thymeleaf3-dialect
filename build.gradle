@@ -27,7 +27,7 @@ ext.libraries = [
 ]
 
 dependencies {
-    ext.springBootVersion = '3.2.2'
+    ext.springBootVersion = '3.2.3'
     implementation(platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}"))
     compileOnly(libraries.thymeleaf3)
 
