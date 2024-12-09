@@ -1,4 +1,5 @@
 ![Build](https://github.com/otto-de/esi-include-thymeleaf3-dialect/workflows/Build/badge.svg)
+![OSS Lifecycle](https://img.shields.io/osslifecycle?file_url=https%3A%2F%2Fraw.githubusercontent.com%2Fotto-de%2Fesi-include-thymeleaf3-dialect%2Fmain%2FOSSMETADATA)
 
 # 1. About
 
