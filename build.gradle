@@ -3,33 +3,28 @@ plugins {
     id('eclipse')
     id('idea')
     id('maven-publish')
-    id('signing')
-    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+    id("org.jreleaser") version "1.17.0"
 }
 
 version = '2.1.1-SNAPSHOT'
 group = 'de.otto'
 
-sourceCompatibility = 17
+java {
+    sourceCompatibility = 17
+    withJavadocJar()
+    withSourcesJar()
+}
 
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url "https://oss.sonatype.org/content/repositories/releases/" }
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
-ext.libraries = [
-        thymeleaf3: [
-                'org.thymeleaf:thymeleaf',
-                'org.thymeleaf:thymeleaf-spring6'
-        ]
-]
-
 dependencies {
-    ext.springBootVersion = '3.3.3'
+    ext.springBootVersion = '3.4.4'
     implementation(platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}"))
-    compileOnly(libraries.thymeleaf3)
+    compileOnly("org.thymeleaf:thymeleaf")
+    compileOnly("org.thymeleaf:thymeleaf-spring6")
 
     implementation('org.springframework:spring-context')
     implementation('org.springframework:spring-beans')
@@ -38,7 +33,9 @@ dependencies {
     implementation('jakarta.annotation:jakarta.annotation-api')
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine")
-    testImplementation(libraries.thymeleaf3)
+    testImplementation("org.thymeleaf:thymeleaf")
+    testImplementation("org.thymeleaf:thymeleaf-spring6")
+
     testImplementation("org.mockito:mockito-core")
     testImplementation("org.hamcrest:hamcrest-core")
     testImplementation("org.hamcrest:hamcrest-library")
@@ -56,9 +53,47 @@ jar {
     manifest.attributes provider: 'gradle'
 }
 
-nexusPublishing {
-    repositories {
-        sonatype()
+jreleaser {
+    project {
+        snapshot {
+            fullChangelog = true
+        }
+    }
+    gitRootSearch = true
+    signing {
+        active = 'ALWAYS'
+        armored = true
+    }
+    deploy {
+        maven {
+            github {
+                app {
+                    snapshotSupported = true
+                    active = 'ALWAYS'
+                    url = "https://maven.pkg.github.com/otto-de/esi-include-thymeleaf3-dialect"
+                    stagingRepository('build/staging-deploy')
+                }
+            }
+            mavenCentral {
+                app {
+                    snapshotSupported = false
+                    active = 'ALWAYS'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    stagingRepository('build/staging-deploy')
+
+                    // Time to wait between state transition checks, in seconds.
+                    // Defaults to `10`.
+                    //
+                    retryDelay = 10
+
+                    // Maximum number of attempts to verify state transition.
+                    // Defaults to `60`.
+                    // Maven Central release can currently take up to 20 minutes, so we increased this to 120
+                    //
+                    maxRetries = 120
+                }
+            }
+        }
     }
 }
 
@@ -67,24 +102,15 @@ publishing {
         mavenJava(MavenPublication) {
             artifactId = 'esi-include-thymeleaf3-dialect'
             from components.java
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
             pom {
                 name = 'esi-include-thymeleaf3-dialect'
-                packaging 'jar'
                 description = 'This library provides a thymeleaf3 dialect that resolves esi:include tags.ü'
                 url = 'http://github.com/otto-de/esi-include-thymeleaf3-dialect'
 
                 scm {
-                    url = 'scm:git@github.com:otto-de/esi-include-thymeleaf3-dialect.git'
-                    connection = 'scm:git@github.com:otto-de/esi-include-thymeleaf3-dialect.git'
-                    developerConnection = 'scm:git@github.com:otto-de/esi-include-thymeleaf3-dialect.git'
+                    connection = 'scm:git:https://github.com/otto-de/esi-include-thymeleaf3-dialect.git'
+                    developerConnection = 'scm:git:ssh://github.com/otto-de/esi-include-thymeleaf3-dialect.git'
+                    url = 'https://github.com/otto-de/esi-include-thymeleaf3-dialect'
                 }
 
                 licenses {
@@ -108,22 +134,13 @@ publishing {
         }
     }
 
-}
+    repositories {
+        maven {
+            // Our settingsDirectory is the project root dir.
+            // We want to 'publish' to the specified dir to have the artifacts uploaded with JReleaser from that location afterwards.
+            url = layout.settingsDirectory.dir('build/staging-deploy')
+        }
+    }
 
-java {
-    withJavadocJar()
-    withSourcesJar()
 }
-
-signing {
-    useGpgCmd()
-    sign publishing.publications.mavenJava
-}
-
-artifacts {
-    archives jar
-    archives javadocJar
-    archives sourcesJar
-}
-
 
