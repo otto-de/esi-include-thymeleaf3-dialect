@@ -37,6 +37,10 @@ When property `esiinclude-thymeleaf-dialect.dialect-enabled` is `true`, esi-incl
 
 ## Next Snapshot
 
+## Version 2.2.0
+* Update dependencies (including update to spring boot 3.4.4)
+* Publish library via central.sonatype.com instead of oss.sonatype.org
+
 ## Version 2.1.0
 * Update to spring boot 3.2.2
 
