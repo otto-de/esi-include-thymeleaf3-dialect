@@ -37,6 +37,9 @@ When property `esiinclude-thymeleaf-dialect.dialect-enabled` is `true`, esi-incl
 
 ## Next Snapshot
 
+## Version 2.3.0
+* The library now uses Spring Boot auto-configuration. This makes it unnecessary to use component scan.
+
 ## Version 2.2.0
 * Update dependencies (including update to spring boot 3.4.4)
 * Publish library via central.sonatype.com instead of oss.sonatype.org
