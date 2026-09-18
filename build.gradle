@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    ext.springBootVersion = '3.4.4'
+    ext.springBootVersion = '4.1.1'
     implementation(platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}"))
     compileOnly("org.thymeleaf:thymeleaf")
     compileOnly("org.thymeleaf:thymeleaf-spring6")
