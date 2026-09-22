@@ -3,16 +3,22 @@ plugins {
     id('eclipse')
     id('idea')
     id('maven-publish')
-    id("org.jreleaser") version "1.17.0"
+    id("org.jreleaser") version "1.26.0"
 }
 
 version = '2.3.1-SNAPSHOT'
 group = 'de.otto'
 
 java {
-    sourceCompatibility = 17
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
     withJavadocJar()
     withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 21
 }
 
 repositories {
@@ -33,10 +39,11 @@ dependencies {
     implementation('jakarta.annotation:jakarta.annotation-api')
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.thymeleaf:thymeleaf")
     testImplementation("org.thymeleaf:thymeleaf-spring6")
 
-    testImplementation("org.mockito:mockito-core")
+    testImplementation("org.mockito:mockito-core:5.18.0")
     testImplementation("org.hamcrest:hamcrest-core")
     testImplementation("org.hamcrest:hamcrest-library")
     testImplementation("org.awaitility:awaitility")
