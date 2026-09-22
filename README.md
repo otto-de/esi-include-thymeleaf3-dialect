@@ -35,7 +35,7 @@ When property `esiinclude-thymeleaf-dialect.dialect-enabled` is `true`, esi-incl
 
 # 3. Release Notes
 
-## Next Snapshot
+## Version 2.4.0
 * Build with gradle 9 / java 25 toolchain (compiled for java 21 compatibility)
 * Update to spring boot 4.1.1 / spring framework 7
 
