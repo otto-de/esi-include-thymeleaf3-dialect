@@ -37,6 +37,7 @@ When property `esiinclude-thymeleaf-dialect.dialect-enabled` is `true`, esi-incl
 
 ## Next Snapshot
 * Build with gradle 9 / java 25 toolchain (compiled for java 21 compatibility)
+* Update to spring boot 4.1.1 / spring framework 7
 
 ## Version 2.3.0
 * The library now uses Spring Boot auto-configuration. This makes it unnecessary to use component scan.
